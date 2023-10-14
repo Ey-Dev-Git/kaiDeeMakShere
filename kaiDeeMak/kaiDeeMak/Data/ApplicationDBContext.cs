@@ -12,6 +12,7 @@ namespace kaiDeeMak.Data
 
         public DbSet<Customers> Customers { get; set; }
         public DbSet<Orders> Orders { get; set; }
+        public DbSet<OrderDetils> OrderDetils { get; set; }
         public DbSet<Products> Products { get; set; }
 
 
@@ -25,9 +26,15 @@ namespace kaiDeeMak.Data
                         .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Products>()
-                        .HasMany(t => t.Orders)
+                        .HasMany(t => t.OrdersDetils)
                         .WithOne(s => s.Product)
                         .HasForeignKey(s => s.ProductID)
+                        .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Orders>()
+                        .HasMany(t => t.OrderDetils)
+                        .WithOne(s => s.Order)
+                        .HasForeignKey(s => s.OrderID)
                         .OnDelete(DeleteBehavior.Cascade);
         }
     }

@@ -53,12 +53,9 @@ namespace kaiDeeMak.Migrations
                     OrderID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CustomerID = table.Column<int>(type: "int", nullable: true),
-                    ProductID = table.Column<int>(type: "int", nullable: true),
                     OrderDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ShippingAddress = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     TotalAmount = table.Column<float>(type: "real", nullable: false),
-                    Quantity = table.Column<int>(type: "int", nullable: false),
-                    Discount = table.Column<int>(type: "int", nullable: false),
                     IsDelivered = table.Column<bool>(type: "bit", nullable: false),
                     IsPaid = table.Column<bool>(type: "bit", nullable: false)
                 },
@@ -71,8 +68,31 @@ namespace kaiDeeMak.Migrations
                         principalTable: "Customers",
                         principalColumn: "CustomerID",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OrderDetils",
+                columns: table => new
+                {
+                    OrderDetilID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    OrderID = table.Column<int>(type: "int", nullable: true),
+                    ProductID = table.Column<int>(type: "int", nullable: true),
+                    Total = table.Column<float>(type: "real", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    Discount = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrderDetils", x => x.OrderDetilID);
                     table.ForeignKey(
-                        name: "FK_Orders_Products_ProductID",
+                        name: "FK_OrderDetils_Orders_OrderID",
+                        column: x => x.OrderID,
+                        principalTable: "Orders",
+                        principalColumn: "OrderID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_OrderDetils_Products_ProductID",
                         column: x => x.ProductID,
                         principalTable: "Products",
                         principalColumn: "ProductID",
@@ -80,27 +100,35 @@ namespace kaiDeeMak.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_OrderDetils_OrderID",
+                table: "OrderDetils",
+                column: "OrderID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderDetils_ProductID",
+                table: "OrderDetils",
+                column: "ProductID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Orders_CustomerID",
                 table: "Orders",
                 column: "CustomerID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Orders_ProductID",
-                table: "Orders",
-                column: "ProductID");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "OrderDetils");
+
+            migrationBuilder.DropTable(
                 name: "Orders");
 
             migrationBuilder.DropTable(
-                name: "Customers");
+                name: "Products");
 
             migrationBuilder.DropTable(
-                name: "Products");
+                name: "Customers");
         }
     }
 }

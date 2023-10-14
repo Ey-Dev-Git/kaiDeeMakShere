@@ -60,8 +60,6 @@ namespace kaiDeeMak.Controllers
         {
             if (ModelState.IsValid)
             {
-                float totalAmount = GetTotalAmount(model);
-                model.TotalAmount = totalAmount;
                 _db.Orders.Add(model);
                 _db.SaveChanges();
                 return RedirectToAction("ShowCreateOrder");
@@ -79,34 +77,11 @@ namespace kaiDeeMak.Controllers
         {
             var customerID = (from s in _db.Customers
                               select s.CustomerID).ToList();
-            var productID = (from s in _db.Products where s.InStock == true
-                             select s.ProductID).ToList();
-
             // กำหนดค่าให้กับ ViewBag
             ViewBag.CustomerID = new SelectList(customerID);
-            ViewBag.ProductID = new SelectList(productID);
             return View();
         }
-        //ddd
-        public float GetTotalAmount(Orders modelOrder) 
-        {
-            var order = modelOrder;
-            var productID = order.ProductID;
-            var product = _db.Products.Find(productID);
-            float discount = order.Discount;
-            float quantity = order.Quantity;
-            float price = product.Price;
-            if (discount <= 1)
-            {
-                float totalAmount = (price * 1) * quantity;
-                return totalAmount;
-            }
-            else 
-            {
-                float totalAmount = (price * (discount / 100)) * quantity;
-                return totalAmount;
-            }
-        }
+
 
         // /Order/UpdateOrder/{id}
         [HttpPost]
@@ -114,8 +89,6 @@ namespace kaiDeeMak.Controllers
         [IgnoreAntiforgeryToken]
         public IActionResult UpdateOrder([FromForm] Orders model)
         {
-            float totalAmount = GetTotalAmount(model);
-            model.TotalAmount = totalAmount;
             _db.Orders.Update(model);
             _db.SaveChanges();
             return Ok("แก้ไขเรียบร้อย");
@@ -137,12 +110,9 @@ namespace kaiDeeMak.Controllers
             }
             var customerID = (from s in _db.Customers
                               select s.CustomerID).ToList();
-            var productID = (from s in _db.Products
-                             select s.ProductID).ToList();
 
             // กำหนดค่าให้กับ ViewBag
             ViewBag.CustomerID = new SelectList(customerID);
-            ViewBag.ProductID = new SelectList(productID);
             return View(obj);
         }
 

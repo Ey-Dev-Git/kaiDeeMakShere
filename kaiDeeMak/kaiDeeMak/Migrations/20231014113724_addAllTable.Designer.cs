@@ -12,7 +12,7 @@ using kaiDeeMak.Data;
 namespace kaiDeeMak.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20230916162326_addAllTable")]
+    [Migration("20231014113724_addAllTable")]
     partial class addAllTable
     {
         /// <inheritdoc />
@@ -61,6 +61,38 @@ namespace kaiDeeMak.Migrations
                     b.ToTable("Customers");
                 });
 
+            modelBuilder.Entity("kaiDeeMak.Models.OrderDetils", b =>
+                {
+                    b.Property<int>("OrderDetilID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderDetilID"));
+
+                    b.Property<int>("Discount")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OrderID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ProductID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<float>("Total")
+                        .HasColumnType("real");
+
+                    b.HasKey("OrderDetilID");
+
+                    b.HasIndex("OrderID");
+
+                    b.HasIndex("ProductID");
+
+                    b.ToTable("OrderDetils");
+                });
+
             modelBuilder.Entity("kaiDeeMak.Models.Orders", b =>
                 {
                     b.Property<int>("OrderID")
@@ -72,9 +104,6 @@ namespace kaiDeeMak.Migrations
                     b.Property<int?>("CustomerID")
                         .HasColumnType("int");
 
-                    b.Property<int>("Discount")
-                        .HasColumnType("int");
-
                     b.Property<bool>("IsDelivered")
                         .HasColumnType("bit");
 
@@ -83,12 +112,6 @@ namespace kaiDeeMak.Migrations
 
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<int?>("ProductID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
 
                     b.Property<string>("ShippingAddress")
                         .IsRequired()
@@ -101,8 +124,6 @@ namespace kaiDeeMak.Migrations
                     b.HasKey("OrderID");
 
                     b.HasIndex("CustomerID");
-
-                    b.HasIndex("ProductID");
 
                     b.ToTable("Orders");
                 });
@@ -142,6 +163,23 @@ namespace kaiDeeMak.Migrations
                     b.ToTable("Products");
                 });
 
+            modelBuilder.Entity("kaiDeeMak.Models.OrderDetils", b =>
+                {
+                    b.HasOne("kaiDeeMak.Models.Orders", "Order")
+                        .WithMany("OrderDetils")
+                        .HasForeignKey("OrderID")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("kaiDeeMak.Models.Products", "Product")
+                        .WithMany("OrdersDetils")
+                        .HasForeignKey("ProductID")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Order");
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("kaiDeeMak.Models.Orders", b =>
                 {
                     b.HasOne("kaiDeeMak.Models.Customers", "Customer")
@@ -149,14 +187,7 @@ namespace kaiDeeMak.Migrations
                         .HasForeignKey("CustomerID")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("kaiDeeMak.Models.Products", "Product")
-                        .WithMany("Orders")
-                        .HasForeignKey("ProductID")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.Navigation("Customer");
-
-                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("kaiDeeMak.Models.Customers", b =>
@@ -164,9 +195,14 @@ namespace kaiDeeMak.Migrations
                     b.Navigation("Orders");
                 });
 
+            modelBuilder.Entity("kaiDeeMak.Models.Orders", b =>
+                {
+                    b.Navigation("OrderDetils");
+                });
+
             modelBuilder.Entity("kaiDeeMak.Models.Products", b =>
                 {
-                    b.Navigation("Orders");
+                    b.Navigation("OrdersDetils");
                 });
 #pragma warning restore 612, 618
         }

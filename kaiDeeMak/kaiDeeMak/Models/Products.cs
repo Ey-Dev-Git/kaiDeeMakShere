@@ -25,7 +25,7 @@ namespace kaiDeeMak.Models
 
         [JsonIgnore]
         [InverseProperty("Product")]
-        public ICollection<Orders>? Orders { get; set; }
+        public ICollection<OrderDetils>? OrdersDetils { get; set; }
 
 
     }
